@@ -1,0 +1,791 @@
+\documentclass{article}[12pt]
+
+
+\newcount\Comments
+\Comments=1   % TODO: set to 0 for final version
+
+% for comments
+\newcommand{\authcmt}[2]{\ifnum\Comments=1\textcolor{#1}{#2}\fi}
+% add yourself here:
+\newcommand{\akshay}[1]{\authcmt{red}      {[AB: #1]}}
+\newcommand{\yoav}[1]  {\authcmt{blue}   {[YF: #1]}}
+
+
+
+
+
+\usepackage{fullpage}
+%\usepackage{hyperref,url}
+\usepackage{amsmath,amsfonts,amsthm,amssymb}
+\usepackage{bbm}
+\usepackage{graphics, graphicx, xcolor}
+\usepackage{enumerate}
+\usepackage{verbatim}		% for misc commenting, etc.
+\usepackage{psfrag}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage[font={small}]{caption}
+
+\newtheorem{thm}{Theorem}%[section]
+\newtheorem{lem}[thm]{Lemma}
+\newtheorem{prop}[thm]{Proposition}
+\newtheorem{cor}[thm]{Corollary}
+\newtheorem{conj}[thm]{Conjecture}
+\newtheorem{obs}[thm]{Observation}
+\newtheorem{defn}[thm]{Definition}
+\newtheorem{alg}{Algorithm}
+\newtheorem{ass}{Assumption}
+\newtheorem{property}{Property}
+\newtheorem{remark}{Remark}
+%\newcommand{\qed}{\hfill\rule{7pt}{7pt}}
+%\newenvironment{proof}{\noindent{\bf Proof:}}{\qed\medskip}
+\setcounter{MaxMatrixCols}{20}
+
+\newtheoremstyle{named}{}{}{}{}{\bfseries}{.}{.5em}{\thmnote{#3}}
+\theoremstyle{named}
+\newtheorem{nremark}{Remark}
+
+
+\newcommand{\corr}{\mbox{corr}}
+\newcommand{\Exy}[1]{E_{(x_i,y_i)}\left( #1 \right)} 
+\newcommand{\ones}[1]{\mathbbm{1}^{#1}}
+\newcommand{\vA}{\mathbf{A}}    % combined constraints Matrix
+\newcommand{\va}{\mathbf{a}}
+\newcommand{\vd}{\mathbf{d}}    % combined constraints vector
+\newcommand{\vF}{\mathbf{F}}    % constraints defined by function
+                                % correlation bounds
+\newcommand{\vI}{\mathbf{I}}    % Unit Matrix
+\newcommand{\vb}{\mathbf{b}}    % target function coefficients
+\newcommand{\vu}{\mathbf{u}}    % upper bound on correlations
+\newcommand{\vl}{\mathbf{l}}    % lower bound on correlation
+\newcommand{\vg}{\mathbf{g}}    % algorithm's predictions
+\newcommand{\vp}{\mathbf{p}}
+\newcommand{\vq}{\mathbf{q}}
+\newcommand{\vr}{\mathbf{r}}
+\newcommand{\vs}{\mathbf{s}}
+\newcommand{\vt}{\mathbf{t}}
+\newcommand{\vv}{\mathbf{v}}
+\newcommand{\vz}{\mathbf{z}}
+\newcommand{\vzero}{\mathbf{0}}
+\newcommand{\vone}{\mathbf{1}}
+
+\DeclareMathOperator{\id}{id}
+\DeclareMathOperator{\tr}{tr}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator{\len}{Length}
+\DeclareMathOperator{\arclen}{Arclength}
+\DeclareMathOperator{\proj}{proj}
+\DeclareMathOperator{\orth}{orth}
+\DeclareMathOperator{\sgn}{sgn}
+\DeclareMathOperator{\vspan}{span}
+\DeclareMathOperator{\cols}{cols}
+\DeclareMathOperator{\Prtxt}{Pr}
+\DeclareMathOperator{\var}{var}
+\DeclareMathOperator{\poly}{poly}
+\DeclareMathOperator{\polylog}{polylog}
+
+\newcommand{\allbibdir}{../all-refs/master-bib}
+
+\newcommand{\bd}[1]{\mathbf{#1}}  % for bolding symbols
+\newcommand{\RR}{\mathbb{R}}      % Real numbers
+\newcommand{\ZZ}{\mathbb{Z}}      % Integers
+\newcommand{\NN}{\mathbb{N}}      % natural numbers
+\newcommand{\RP}{\mathbb{RP}}      % real projective space
+\newcommand{\Sp}{\mathbb{S}}
+\newcommand{\col}[1]{\left[\begin{matrix} #1 \end{matrix} \right]}
+\newcommand{\comb}[2]{\binom{#1^2 + #2^2}{#1+#2}}
+\newcommand{\vnorm}[1]{\left\lVert#1\right\rVert} % vector norm
+\newcommand{\bfloor}[1]{\left\lfloor#1\right\rfloor} % floor function
+\newcommand{\bceil}[1]{\left\lceil#1\right\rceil} % ceiling function
+\newcommand{\ifn}{\mathbf{1}} % indicator function for sets
+\newcommand{\EV}{\mathbb{E}} % expected value operator
+\newcommand{\evp}[2]{\mathbb{E}_{#2} \left[#1\right]} % expected value operator
+\newcommand{\abs}[1]{\left| #1 \right|}
+\newcommand{\pr}[1]{\Prtxt \left(#1\right)}
+\newcommand{\prp}[2]{\Prtxt_{#2} \left(#1\right)}
+\newcommand{\ip}[2]{\left\langle #1, #2 \right\rangle}
+\newcommand{\err}[1]{\mbox{err}\left(#1\right)}
+\newcommand{\emperr}[2]{\widehat{\mbox{err}}_{#2} \left(#1\right)}
+\newcommand{\cov}[1]{\mbox{cov}\left(#1\right)}
+
+
+\newcommand*{\qedinp}{\hfill\ensuremath{\blacksquare}} %in-place qed theorem box; black box
+\newcommand*{\qedinpw}{\hfill\ensuremath{\square}} % white box
+\newcommand{\pderiv}[2]{\frac {\partial \left[ #1 \right]} {\partial #2}}
+\newcommand{\expp}[1]{\exp \left(#1\right)}
+\newcommand{\epshat}{\hat{\epsilon}}
+\newcommand{\cH}{\mathcal{H}}
+\newcommand{\cR}{\mathcal{R}}
+\newcommand{\cX}{\mathcal{X}}
+\newcommand{\cZ}{\mathcal{Z}}
+\newcommand{\cG}{\mathcal{G}}
+\newcommand{\cD}{\mathcal{D}}
+\newcommand{\cU}{\mathcal{U}}
+\newcommand{\cL}{\mathcal{L}}
+\newcommand{\cN}{\mathcal{N}}
+\newcommand{\cM}{\mathcal{M}}
+\newcommand{\cF}{\mathcal{F}}
+\newcommand{\cW}{\mathcal{W}}
+\newcommand{\cE}{\mathcal{E}}
+\newcommand{\cO}[1]{\mathcal{O}\left(#1\right)}
+\newcommand{\ctO}[1]{\tilde{\mathcal{O}}\left(#1\right)}
+\newcommand{\Ve}{V_\epsilon}
+\newcommand{\hQ}{\hat{Q}}
+\newcommand{\hL}{\hat{L}}
+\newcommand{\qn}[1]{\textbf{#1}}
+\newcommand{\asin}[1]{\sin^{-1}\left(#1\right)}
+\newcommand{\acos}[1]{\cos^{-1}\left(#1\right)}
+\newcommand{\lrp}[1]{\left(#1\right)}
+\newcommand{\kld}[2]{\mbox{D}_{KL} \left(#1 \mid\mid #2\right)}
+
+\renewcommand{\qedsymbol}{\qedinp} % Make box after proofs black, not white.
+
+\everymath{\displaystyle}
+
+
+
+
+
+
+% Does localized rademacher completely characterize ERM? Can covering numbers / rademacher be formulated to handle restricted data distributions in a sane way?
+% Analyze BHLZ10 with covers? (Based on this analysis)
+% Can random sign noise help analyze voting methods for this, as in sparse recovery (Price's thesis)?
+% Can we formulate the Hedge game in terms of covers? If it's a low-resolution cover, the hypotheses are pretty independent
+
+
+
+
+
+\title{Active Learning with Covers}
+
+\begin{document}
+
+\maketitle
+
+
+\akshay{
+As you (Yoav) believed, I have not found previous work on covers that tackles active learning, 
+as active learning appears to 
+not have been a research focus when intensive work on covers was ongoing up to the mid-90s. 
+Though the idea of using covers does come up in recent published work on active learning (by Hanneke), 
+it is relegated to only a brief mention, and it seems like it has not been developed at all before this. }
+
+\section{Definitions}
+
+We consider a standard statistical learning setting. \\
+
+{\bf Data distribution and labels:} 
+Data points (``examples") come from a space $\cX$. 
+They are drawn i.i.d. from a distribution $\cD$ over $\cX$. 
+
+Each example has a true label $y_i \in \{-1, +1\}$. 
+This is initially unknown by the algorithm but is available upon request. 
+Labels are generated by a conditional distribution $\eta (x) := \prp{y = +1 \mid x}{}$. \\
+
+  
+{\bf Hypothesis class:} 
+A finite set of classification rules
+$\cH= \{ h_1,\ldots, h_n \}$, with each $h_i : \cX \mapsto \{-1,+1\}$.
+These collectively represent all the side information the algorithm uses to make predictions. 
+Each $h_i$ has true error $\err{h_i} = \prp{h_i (x) \neq y}{\cD, \eta}$. 
+On a finite set of labeled examples $S = \{(x_1, y_1), (x_2, y_2), \dots, (x_{\abs{S}}, y_{\abs{S}}) \}$, 
+the empirical error of $h_i$ is $\emperr{h_i} = \frac{1}{\abs{S}} \sum_{i=1}^{\abs{S}} \ifn(h_i(x) \neq y)$.
+  
+We denote an optimal hypothesis (there may be multiple) by 
+$h^* \in \argmin_{h \in \cH} \err{h}$. 
+Though much work has been done on the \emph{realizable} case when $\err{h^*} = 0$, 
+we focus on the more general \emph{agnostic} case $\err{h^*} \geq 0$.
+
+Finally, define the \emph{disagreement region} of any $W \subseteq \cH$ by 
+$DIS(W) := \left\{ x \in \cX : \exists h, h' \in W \;s.t.\; h(x) \neq h'(x) \right\}$. \\
+
+
+{\bf Metric embedding of $\cH$:}
+The distribution $\cD$ induces a (pseudo)metric $\rho(h, h') := \prp{h(x) \neq h'(x)}{x \sim \cD}$ on the hypotheses.
+With respect to $\rho$, we can define the closed ball around any $h \in \cH$ by $B(h, r) = \{ g \in \cH : \rho(h, g) \leq r \}$. 
+
+Recall that an $\epsilon$-cover of any $W \subseteq \cH$ is a subset $\Omega \subseteq W$ 
+such that for any $w \in W$, 
+there exists a $\omega \in \Omega$ such that $\rho(w, \omega) \leq \epsilon$. 
+Write the $\epsilon$-covering number of any $W \subset \cH$ w.r.t. the metric $\rho$ 
+as $\cN (\epsilon, W, \rho)$, or simply $\cN (\epsilon, W)$ when the metric is understood.
+
+Denote a minimum-sized $\epsilon$-cover of $W$ by $\cov{\epsilon, W}$, so that $\abs{\cov{\epsilon, W}} = \cN(\epsilon, W)$. 
+(We take the $\cov{\cdot, \cdot}$ operator to be efficient and essentially free to compute compared to the cost of querying labels.)
+\footnote{We gloss over the details of constructing (near-)minimal $\epsilon$-covers for clarity; 
+the discussion of Section \ref{sec:unlabeleddata} on unlabeled data addresses some of the related issues.}
+
+Conversely, for any $W \subseteq \cH$ and distance $\epsilon > 0$, 
+define $R (W, \epsilon) := \bigcup_{h \in W} B(h, \epsilon)$ to be the region of $\cH$ covered by $W$ at scale $\epsilon$. 
+
+%{\bf Labelings and entropy:} 
+%A \emph{labeling} for any subset $S \subseteq X$ is a vector $\vr \in \{-1,+1\}^{\abs{S}}$ 
+%representing a label assignment for the examples in $S$.
+%Any labeling $\vr$ for $S$ can be projected onto a subset $T \subseteq S$ by taking only the coordinates corresponding to $T$.
+%The resulting projection is written as $\pi_T (\vr) \in \{-1,+1\}^{\abs{T}}$.
+%
+%Note that any hypothesis $h_i$ is a labeling for $X$
+%It will be treated as such in notation, 
+%so that for any $S \subseteq X$, 
+%we have $[ \pi_S (h_i) ]_j = h_i (x_k)$ where $x_k$ is the $j^{th}$ example in $X$ that is also in $S$.
+%
+%On any set of examples $S \subseteq X$, the hypotheses $\cH$ induce 
+%a set of \akshay{(distinct!)} 
+%labelings $L_S = \{ \pi_S (h_1) , \dots, \pi_S (h_n) \}$. 
+%Suppose $\abs{L_S} = k$, i.e. $L_S$ has $k$ \emph{distinct} labelings. 
+%Then $L_S$ induces a partition $L_S^1, L_S^2, \dots, L_S^k$ of $\cH$, 
+%in which all elements of $L_S^i$ predict the same labeling.
+%The entropy of this partition is written as $H_S (\cH) = H_S$.
+
+
+
+
+
+\subsection{Role of Unlabeled Data}
+\label{sec:unlabeleddata}
+
+We assume that unlabeled examples are available in abundance at essentially no cost. 
+This assumption simplifies the discussion, but we briefly outline its implications here for completeness.
+
+\begin{enumerate}
+\item
+\textbf{Estimation of Distance Metric}:  
+In particular, this implies that we can determine the distance $\rho(h, h')$ 
+between any pair of classifiers $h, h' \in \cH$ to arbitrary accuracy. 
+If needed, sample complexity bounds for this operation can be derived to quantify the amount of unlabeled data used. 
+For instance, if $\cH$ has VC dimension $d$, then classical VC theory implies that all pairwise distances 
+can be estimated uniformly within $\epsilon$ using $\cO{ \frac{d + \log (1/\delta)}{\epsilon^{2}} }$ (unlabeled) examples, 
+w.p. $\geq 1-\delta$ over the i.i.d. draw of these examples from $\cD$. 
+
+\item
+\textbf{Infinite $\cH$}: 
+Though we assume a finite $\cH$, 
+extension to infinite $\cH$ is fairly simple.
+Our finite hypothesis set can be thought of as a high-resolution $\epsilon$-cover of 
+an infinite $\cH$ for some very small $\epsilon$. 
+
+\item
+\textbf{Constructing a Minimal $\epsilon$-Cover}: 
+Minimal covers of $\cH$ at various scales form the core of our approach. 
+They depend on the ability to estimate the disagreement metric $\rho$ as discussed above. 
+In particular, since we take unlabeled data to be free and avoid tractability issues for now, 
+we assume the algorithm can compute (an upper bound on) $\cN (\epsilon, W, \rho)$ 
+for any $W \subseteq \cH$ and any $\epsilon$.
+
+A nearly minimal $\epsilon$-cover can be constructed w.p. $\geq 1-\delta$ 
+by first drawing a sample $S$ of 
+$\cO{ \frac{d \log (1/\epsilon) + \log (1/\delta)}{\epsilon} }$ (unlabeled) examples from $\cD$ [Haussler 95], 
+and then choosing one classifier from $\cH$ for each labeling of $S$.
+In this case $S$ is large enough to represent $\cD$, of which it is a ($\sim$ minimal) $\epsilon$-cover. 
+\footnote{This approach is basically the same as in [Buescher, Kumar 96], 
+and they develop it in detail; 
+for our purposes, the relevant part of their analysis comprises Problem 12.14 of [Devroye, Gy\H{o}rfi, Lugosi 96].}
+
+Alternatively, if $\cH$ is finite, 
+constructing an $\epsilon$-net ($\cO{\epsilon}$ cover and packing, nearly optimal for both) 
+can be done using a simple greedy iterative algorithm. 
+
+Practically constructing and maintaining these nets has been well-studied, e.g. using cover trees [Beygelzimer, Kakade, Langford 06]. 
+Our analysis contains similar ideas to these and navigating nets [Krauthgamer, Lee 04].
+\end{enumerate}
+
+
+
+
+
+
+%----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+%----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+\section{Disagreement-Based Active Learning with Covers}
+
+\akshay{I still need to fill in certain minor parts of the analysis, 
+such as the exact form of a couple of the sample complexity bounds. 
+These parts are marked as such.}
+
+The first active algorithm we analyze is a variant of the well-studied mellow disagreement-based 
+querying strategy first proposed in [Cohn, Atlas, Ladner 94] and often known as ``CAL." 
+
+
+\subsection{Outline and Motivation}
+
+We retain the motivation of CAL: keep track of a version space $V$ of good classifiers 
+which contains $h^*$, 
+and only query labels of points which are in 
+$DIS(V) := \{ x \in \cX : \exists h, h' \in V \;s.t.\; h(x) \neq h'(x) \}$.
+
+The algorithm we study (Algorithm \ref{alg:CALCovers}) differs somewhat from the original CAL, 
+in that it handles the agnostic case 
+\footnote{ Most of the analysis therefore resembles that of [Dasgupta, Hsu, Monteleoni 07] 
+and sequels. 
+This line of work is summarized in [Hanneke 14, Ch. 5]. }
+and only polls a representative cover of $V$ to decide whether to query labels. 
+However, in a similar spirit to CAL and other disagreement-based algorithms, 
+our algorithm estimates the excess error of every hypothesis in $V$, 
+in order to update $V$.
+
+This raises one issue in particular:
+the examples that the algorithm leaves unlabeled can only be useful in estimating excess errors  
+to within $\Omega$(resolution of the cover).
+Since the cover resolution must be made progressively finer as the algorithm progresses, 
+this means that examples which are left unlabeled in earlier iterations 
+cannot be used to estimate error in later iterations. 
+
+Our crude solution to this issue is to throw away these earlier examples, 
+which of course does not the learning process. 
+This is a central problem in designing an aggressive cover-based active learning algorithm, 
+and should be addressed better in future work.
+
+
+\subsection{Preliminaries}
+Before analyzing Algorithm \ref{alg:CALCovers}, we will define some placeholder quantities. 
+
+%First, define $\cH(\alpha) = \left\{ h \in \cH : \err{h} \leq \err{h^*} + \alpha \right\}$. 
+
+We use standard uniform convergence bounds. 
+These state that for any $W \subseteq \cH$,
+if $S$ is a set of $m$ i.i.d. (labeled) examples drawn with $(\cD, \eta)$, 
+then w.p. $\geq 1-\delta$, for all $h \in W$,
+\begin{align}
+\label{fullsetsampskeleton}
+\abs{\emperr{h}{S} - \err{h}} \leq F (W, \delta, m) \in o(1)
+\end{align}
+Here $F(\cdot, \cdot, \cdot)$ is a function of the complexity of $W$. 
+
+\subsubsection{Notes on $F$ and $\delta$}
+\label{sec:concreteFanddelta}
+$F$ can be explicitly written by using a classical empirical Rademacher complexity result, that w.h.p.
+$$\max_{h \in W} \abs{\emperr{h}{S} - \err{h}} \leq 2 \hat{\cR}_S(W) + 3 \sqrt{\frac{\log (1/\delta)}{m}}$$
+and the empirical Rademacher complexity can then be bounded by the log covering number, or VC dimension, 
+or just $\sim \log \abs{\cH}$ (Massart lemma).
+One bound that may be useful to us is Pollard's discretization bound 
+$\hat{\cR}_S(W) \lesssim \epsilon + \sqrt{\frac{2 \log \cN(\epsilon, W) }{m}}$ for any $\epsilon$
+(actually the empirical covering number, hence ``$\lesssim$").
+See the discussion in Section \ref{sec:labelanalysis} for more concreteness.
+
+
+\akshay{I will fill in the details and references for $F(\cdot, \cdot, \cdot)$, depending on how we want to 
+quantify complexity. 
+The algorithm actually needs to compute and use this bound directly; 
+any of the above bounds seems fine for this purpose.}
+
+\akshay{I also neglect to properly allocate the failure probabilities $\delta$ for now. 
+The allocations I am glossing over are only of two kinds: 
+union bounds over a small number of events in each epoch, 
+and a union bound over the countable set of epochs. 
+Both are straightforward and don't significantly affect the final results.}
+
+
+
+\begin{algorithm}
+\caption{Agnostic CAL with Covers}
+\label{alg:CALCovers}
+\begin{algorithmic}[1]
+\State \textbf{Given:} Desired accuracy $\gamma$, failure probability $\delta$
+\State \textbf{Define:} cover scales $\epsilon_k \leftarrow 2^{-k}$ for $k \in \NN$
+\State \textbf{Initialize:} 
+$V_0 \leftarrow \cH$; 
+$W_0 \leftarrow \cov{\epsilon_0, V_0}$; 
+epoch counter $i \leftarrow 0$; 
+for $i=1,2,\dots$: $L_i \leftarrow \emptyset$, 
+unlabeled data counters $m_i \leftarrow 0$
+%\While{$\epsilon_i$}
+\While {$i < \log_2 (\gamma^{-1})$}
+\State $m_i \leftarrow m_i +1$
+\State Sample an unlabeled example $X^i_{m_i} \sim \cD$
+\If {$X^i_{m_i} \in DIS(W_i)$}
+\State Query label $Y^i_{m_i}$ of $X^i_{m_i}$, and set $L_i \leftarrow L_i \cup \{(X^i_{m_i}, Y^i_{m_i}) \}$
+\EndIf
+\If {$m_i$ is large enough that $3 \sqrt{\frac{ \log \lrp{\frac{ 4 \cN (\epsilon_{i+1}, V_i) }{\delta}} }{ m_i }} 
++ 2 F \lrp{ V_i, \frac{\delta}{2}, m_i } \leq 4 \epsilon_i$}
+\label{algmcondition}
+
+\State $V_{i+1} \leftarrow \left\{ h \in V_i : \frac{\abs{L}}{m} \lrp{\emperr{h}{L_i}  - \min_{g \in V_i} \emperr{g}{L_i} } 
+\leq 2 F \lrp{ V_i, \frac{\delta}{2}, m_i } + \frac{\epsilon_i}{\prp{x \notin DIS(W_i)}{}} + \sqrt{\frac{\log \lrp{\frac{ 2 \cN (\epsilon_i, V_i) }{\delta}} }{2m_i }} \right\}$
+\label{algvsupdate}
+
+\State $W_{i+1} \leftarrow \cov{\epsilon_{i+1}, V_{i+1} }$ 
+\State $i \leftarrow i+1$
+\EndIf
+\EndWhile \label{algpt:enditer} \\
+\Return Any $h \in V_i$
+\end{algorithmic}
+\end{algorithm}
+
+
+
+
+
+
+\subsection{Analysis: Generalization Error}
+Let $S_i$ be the set of all $m_i$ examples sampled in epoch $i$, 
+along with their labels. 
+$S_i$ will only be a tool for the analysis, since the algorithm does not query all labels in $S_i$.
+
+Most of our analysis focuses on an arbitrary epoch $i$; 
+for this reason, we omit the subscripts from $L_i, m_i, S_i, V_i$ when the context is clear.
+
+Define $S$ to be the set of all (unlabeled) examples sampled by the algorithm, 
+so that $\abs{S} = m$ after each iteration.
+
+The general idea of the analysis is to uniformly estimate the excess errors of all ``good" hypotheses $h$ using $S$, 
+and in particular the labeled set $L$. 
+
+In other words, for any $h \in V$,
+\begin{align}
+\label{empxsrisk}
+\emperr{h}{S} - \argmin_{g \in V} \emperr{g}{S}
+\end{align} 
+is used as a surrogate for $\err{h} - \err{h^*}$. 
+Now since $\abs{S} = m$, 
+\eqref{empxsrisk} can be decomposed into two disjoint parts dealing with $L$ and $S \setminus L$, 
+for any $g \in V$: 
+\begin{align}
+\label{toterrdecomp}
+\emperr{h}{S} - \emperr{g}{S} = \frac{\abs{L}}{m} \lrp{\emperr{h}{L}  - \emperr{g}{L} } + 
+\frac{m - \abs{L}}{m} \lrp{ \emperr{h}{S \setminus L} - \emperr{g}{S \setminus L} }
+\end{align}
+
+Clearly, 
+the $L$-dependent term is known exactly from the labeled dataset. 
+To deal with the $(S \setminus L)$-dependent term, 
+we must characterize the behavior of the excess risk on the unqueried points, when $x \notin DIS(W_i)$. 
+The following simple lemma concerns this.
+
+\begin{lem}
+\label{lem:unquerieddisregion}
+Take any $g \in V_i$ and any $h \in W_i$. 
+Then 
+$$\prp{g(x) \neq h(x) \mid x \notin DIS(W_i)}{} \leq \frac{\epsilon_i}{\prp{x \notin DIS(W_i)}{}} $$
+%Also, for any $g, h \in V_i$, 
+%$$\prp{g(x) \neq h(x) \mid x \notin DIS(W_i)}{} \leq \frac{2 \epsilon_i}{\prp{x \notin DIS(W_i)}{}} $$
+\end{lem}
+\begin{proof}
+Suppose $\displaystyle g_C \in \argmin_{c \in W_i} \rho(g, c)$. 
+Since $W_i$ is an $\epsilon_i$-cover, 
+\begin{align*}
+\epsilon_i &\geq \prp{g_C (x) \neq g (x)}{} \geq \prp{g_C (x) \neq g (x) \mid x \notin DIS(W_i)}{} \prp{x \notin DIS(W_i)}{} \\
+&= \prp{h (x) \neq g (x) \mid x \notin DIS(W_i)}{} \prp{x \notin DIS(W_i)}{}
+\end{align*}
+where the last line is because $h(x) = g_C(x)$ whenever $x \notin DIS(W_i)$.
+\end{proof}
+
+Lemma \ref{lem:unquerieddisregion} can be used immediately 
+to control the second term of \eqref{toterrdecomp}, 
+leading to the following result. 
+
+\begin{lem}
+\label{lem:unqueriederr}
+Take any $g \in V_i$ and any $h \in W_i$, 
+and suppose $S$ is a set of $m$ (labeled) examples drawn i.i.d. from $\cD, \eta$. 
+Also suppose $\prp{x \notin DIS(W_i)}{} \geq 2 \epsilon_i$.
+Then w.p. $\geq 1-\delta$, 
+$$ \abs{ \lrp{ \emperr{g}{S} - \emperr{h}{S} } - \frac{\abs{L}}{m} \lrp{\emperr{g}{L}  - \emperr{h}{L} } } 
+\leq \frac{\epsilon_i}{\prp{x \notin DIS(W_i)}{}} + \sqrt{\frac{\log (1/\delta)}{2m }} $$
+\end{lem}
+\begin{proof}
+Define $p := \prp{g(x) = y , h(x) \neq y \mid x \notin DIS(W_i)}{} $ and 
+$q := \prp{g(x) \neq h(x) \mid x \notin DIS(W_i)}{}$.
+Each example in $S \setminus L$ is drawn i.i.d., and contributes one of three values $ \{ - \frac{1}{m}, 0, \frac{1}{m} \}$ 
+to $\emperr{g}{S \setminus L} - \emperr{h}{S \setminus L}$, 
+with respective probabilities $\{ p , 1 - q , q - p \}$. 
+Therefore each example contributes a value with magnitude 
+$\leq \frac{1}{m} \mbox{Ber} (q)$ to 
+$\emperr{g}{S \setminus L} - \emperr{h}{S \setminus L}$.
+
+%Let $X \sim \mbox{Bin}\lrp{m - \abs{L}, \prp{g(x) \neq h(x) \mid x \notin DIS(V)}{} }$. 
+So $ \abs{ \frac{m - \abs{L}}{m} \lrp{ \emperr{g}{S \setminus L} - \emperr{h}{S \setminus L} } } = 
+\frac{1}{m} X$ where $X \sim \mbox{Bin}\lrp{m - \abs{L}, q } $. 
+Combining this with \eqref{toterrdecomp},
+\begin{align*}
+\abs{ \lrp{ \emperr{g}{S} - \emperr{h}{S} } - \frac{\abs{L}}{m} \lrp{\emperr{g}{L}  - \emperr{h}{L} } } &\leq \frac{1}{m} X
+\end{align*}
+Recall from Lemma \ref{lem:unquerieddisregion} that $q \leq \frac{\epsilon_i}{\prp{x \notin DIS(W_i)}{}} \leq \frac{1}{2}$. 
+Therefore, applying a Chernoff bound on $X$ gives the result.
+\end{proof}
+
+
+\begin{lem}
+\label{lem:empbestincoverisbest}
+Suppose $h^* \in V_i$. Then w.p. $\geq 1-\delta$, for all $h \in W_i$,
+\begin{align*}
+\emperr{h^*}{S} - \emperr{h}{S} \leq 2 F (V_i, \delta, m)
+\end{align*}
+\end{lem}
+\begin{proof}
+Using the optimality of $h^*$ and then \eqref{fullsetsampskeleton}, 
+\begin{align*}
+\emperr{h^*}{S} - \emperr{g}{S} &= \lrp{ \emperr{h^*}{S} - \err{h^*} } + \lrp{ \err{h^*} - \err{g} } + \lrp{ \err{g} - \emperr{g}{S} } \\
+&\leq \lrp{ \emperr{h^*}{S} - \err{h^*} } + \lrp{ \err{g} - \emperr{g}{S} } \leq 2 F (V_i, \delta, m)
+\end{align*}
+\end{proof}
+
+
+
+
+
+Our accounting for the unlabeled examples in $S$ establishes that $V$ always contains $h^*$.
+
+\begin{lem}
+\label{lem:optisinvs}
+With probability $\geq 1 - \delta$, for all epochs $i$, $h^* \in V_i$.
+\end{lem}
+\begin{proof}
+This is proved by induction on $i$. 
+The base case is clear because $h^* \in \cH = V_0$. 
+
+For the inductive case, assume $h^* \in V_i$. 
+Then by taking a union bound of Lemma \ref{lem:unqueriederr} over all $h \in W_i$, 
+we have that w.p. $\geq 1-\frac{\delta}{2}$, for all $h \in W_i$,
+\begin{align}
+\label{uniflabtounlab}
+\frac{\abs{L}}{m} \lrp{\emperr{h^*}{L}  - \emperr{h}{L} } 
+&\leq \emperr{h^*}{S} - \emperr{h}{S} + \frac{\epsilon_i}{\prp{x \notin DIS(W_i)}{}} + \sqrt{\frac{\log \lrp{\frac{ 2 \cN (\epsilon_i, V_i) }{\delta}} }{2m }} 
+\end{align}
+
+Substituting Lemma \ref{lem:empbestincoverisbest} into \eqref{uniflabtounlab} and taking a union bound, 
+we get that w.p. $\geq 1 - \delta$, 
+\begin{align*}
+\frac{\abs{L}}{m} \lrp{\emperr{h^*}{L}  - \min_{h \in W_i} \emperr{h}{L} } 
+&\leq 2 F \lrp{ V_i, \frac{\delta}{2}, m } + \frac{\epsilon_i}{\prp{x \notin DIS(W_i)}{}} 
++ \sqrt{\frac{\log \lrp{\frac{ 2 \cN (\epsilon_i, V_i) }{\delta}} }{2m }}
+\end{align*}
+The left-hand side of this inequality is $\geq \frac{\abs{L}}{m} \lrp{\emperr{h^*}{L}  - \min_{h \in V_i} \emperr{h}{L} }$ 
+because $W_i \subseteq V_i$.
+This implies that $h^* \in V_{i+1}$, completing the induction.
+\end{proof}
+
+Since the version space $V_i$ always contains $h^*$ and 
+our selective sampling controls the relative risk of any hypotheses in $V_i$, 
+we can derive a generalization error bound on any hypothesis in $V_i$ 
+(and thereby on the hypothesis returned by the algorithm).
+
+\begin{thm}
+\label{thm:fallback}
+For all epochs $i$, w.h.p.
+$$ \max_{h \in V_{i+1}} \err{h} - \err{h^*} \leq \frac{8 \epsilon_i}{\prp{x \notin DIS(W_i)}{}} $$
+\end{thm}
+\begin{proof}
+We prove the result for an arbitrary epoch $i$. 
+
+It suffices to prove that w.h.p.
+\begin{align}
+\label{fallbackinfull}
+\max_{h \in V_{i+1}} \err{h} - \err{h^*} \leq \frac{4 \epsilon_i}{\prp{x \notin DIS(W_i)}{}} 
++ 3 \sqrt{\frac{ \log \lrp{\frac{ 4 \cN (\epsilon_{i+1}, V_i) }{\delta}} }{ m }} 
++ 2 F \lrp{ V_i, \frac{\delta}{2}, m }
+\end{align}
+because of the definition of $m := m_i$ in the algorithm (Line \ref{algmcondition}).
+
+First define $\displaystyle w^* \in \argmin_{g \in W_i} \rho (g, h^*)$. 
+Since $h^* \in V_i$ by Lemma \ref{lem:optisinvs}, $\rho(w^*, h^*) \leq \epsilon_i$, so
+we have by \eqref{fullsetsampskeleton} that w.p. $\geq 1- \delta$, 
+for all $h \in W_{i+1} \subseteq V_{i+1} \subseteq V_i$ simultaneously, 
+\begin{align*}
+\err{h} - \err{w^*} &= \lrp{\err{h} - \emperr{h}{S}} + \lrp{\emperr{h}{S} - \emperr{w^*}{S}} + \lrp{\emperr{w^*}{S} - \err{w^*}} \\
+&\leq \lrp{\emperr{h}{S} - \emperr{w^*}{S}} + \sqrt{\frac{2 \log \lrp{\frac{ \lrp{\cN (\epsilon_i, V_i) + \cN (\epsilon_{i+1}, V_{i+1}) } }{\delta}} }{ m }}
+\end{align*}
+Combining this with Lemma \ref{lem:unqueriederr} and a union bound over all $h \in W_{i+1}$, 
+w.p. $\geq 1- \delta$, $\forall h \in W_{i+1}$, 
+\begin{align}
+\label{intcoverxsrisk}
+\err{h} - \err{w^*} &\leq \frac{\abs{L}}{m} \lrp{ \emperr{h}{L} - \emperr{w^*}{L} } + \frac{\epsilon_i}{\prp{x \notin DIS(W_i)}{}} 
++ \sqrt{\frac{ 5 \log \lrp{\frac{ 2 \lrp{\cN (\epsilon_i, V_i) + \cN (\epsilon_{i+1}, V_{i+1}) } }{\delta}} }{ m }}
+\end{align}
+Now we examine the term $\frac{\abs{L}}{m} \lrp{ \emperr{h}{L} - \emperr{w^*}{L} }$. 
+If $w^* \in V_{i+1}$, 
+then since $h \in V_{i+1}$,
+by definition of the $V_{i+1}$ update (Line \ref{algvsupdate} of the algorithm), 
+we have 
+\begin{align}
+\label{eqncoverstaysinV}
+\frac{\abs{L}}{m} \lrp{ \emperr{h}{L} - \emperr{w^*}{L} } \leq 2 F \lrp{ V_i, \frac{\delta}{2}, m } + \frac{\epsilon_i}{\prp{x \notin DIS(W_i)}{}} 
++ \sqrt{\frac{\log \lrp{\frac{ 2 \cN (\epsilon_i, V_i) }{\delta}} }{2m }}
+\end{align}
+Alternatively, if $w^* \notin V_{i+1}$, 
+since $w^* \in V_i$ and $h \in V_{i+1}$, 
+we have (again by definition of the $V_{i+1}$ update) that 
+$\frac{\abs{L}}{m} \lrp{ \emperr{w^*}{L} - \emperr{h}{L} } \geq 0$. 
+Combining this with \eqref{eqncoverstaysinV} and substituting into \eqref{intcoverxsrisk},
+\begin{align}
+\label{excessriskcovtocov}
+\max_{h \in W_{i+1}} \err{h} - \err{w^*} &\leq \frac{2 \epsilon_i}{\prp{x \notin DIS(W_i)}{}} 
++ 3 \sqrt{\frac{ \log \lrp{\frac{ 2 \lrp{\cN (\epsilon_i, V_i) + \cN (\epsilon_{i+1}, V_{i+1}) } }{\delta}} }{ m }} 
++ 2 F \lrp{ V_i, \frac{\delta}{2}, m } \nonumber \\
+&\leq \frac{2 \epsilon_i}{\prp{x \notin DIS(W_i)}{}} 
++ 3 \sqrt{\frac{ \log \lrp{\frac{ 4 \cN (\epsilon_{i+1}, V_i) }{\delta}} }{ m }} 
++ 2 F \lrp{ V_i, \frac{\delta}{2}, m }
+\end{align}
+where the last line is because $\cN (\epsilon, V)$ is monotonic decreasing in $\epsilon$ and increasing in $V$, 
+$\epsilon_i \geq \epsilon_{i+1}$, and $V_{i+1} \subseteq V_i$.
+
+The result \eqref{fallbackinfull} now follows by combining \eqref{excessriskcovtocov} 
+with the relation
+\begin{align*}
+\max_{h \in V_{i+1}} \err{h} - \err{h^*} &\stackrel{(a)}{\leq} \max_{h \in W_{i+1}} \err{h} - \err{h^*} + \epsilon_{i+1}
+\stackrel{(b)}{\leq} \max_{h \in W_{i+1}} \err{h} - \err{w^*} + \epsilon_{i+1} + \epsilon_i \\
+&\leq \max_{h \in W_{i+1}} \err{h} - \err{w^*} + 2 \epsilon_i 
+\end{align*}
+where (a) is because $W_{i+1}$ is an $\epsilon_{i+1}$-cover of $V_{i+1}$ 
+and (b) is by the definition of $w^*$.
+\end{proof}
+
+The excess error in Theorem \ref{thm:fallback}, 
+$\frac{8 \epsilon_i}{\prp{x \notin DIS(W_i)}{}}$, is $\cO{\epsilon_i}$ in many cases.
+For an example, recall the definition of the disagreement coefficient 
+$\displaystyle \theta = \sup_{\epsilon} \frac{\prp{DIS(B(h^*, \epsilon))}{}}{\epsilon}$, 
+widely used to derive guarantees for disagreement-based active learning algorithms. 
+Then we have the following when $\theta$ is finite (proof omitted here).
+\footnote{A sketch: Suppose $\cH$ has finite disagreement coefficient $\theta$, 
+and let $\cH_{\alpha} = \{ h \in \cH : \err{h} \leq \err{h^*} + \alpha \}$. 
+Roughly speaking, since $W_i \subseteq V_i \subseteq \cH_{\epsilon_i}$, 
+$\prp{x \notin DIS(W_i)}{} \geq \prp{x \notin DIS(V_i)}{} = 1 - \prp{x \in DIS(\cH_{\epsilon_i})}{} 
+\geq 1 - \theta \epsilon_i $, 
+so the result is shown. 
+The inclusion $V_i \subseteq \cH_{\epsilon_i}$ does not strictly follow from Theorem \ref{thm:fallback}, 
+but can be proven by induction on $i$ if $\theta < \infty$.}
+
+\begin{cor}
+\label{cor:fallbackdiscoeff}
+If $\cH$ has disagreement coefficient $\theta < \infty$, then for all epochs $i \geq 1 + \log_2 (\theta)$, w.h.p.
+$$ \max_{h \in V_{i+1}} \err{h} - \err{h^*} \leq 16 \epsilon_i $$
+\end{cor}
+  
+This is essentially as good as this cover-based algorithm can hope for, 
+since the resolution of the cover in epoch $i$ is also $\cO{\epsilon_i}$. 
+
+
+\subsection{Analysis: Label Complexity}
+\label{sec:labelanalysis}
+
+Having derived a generalization error guarantee, 
+we now show that the algorithm does not query too many labels. 
+For classes $\cH$ with a finite disagreement coefficient, we can prove a label complexity bound. 
+
+In order to quantify label complexity, we must explicitly show a bound on the number of unlabeled examples $m_i$ used. 
+This can only be done if we make $F(\cdot, \cdot, \cdot)$ concrete. 
+So for our purposes in this section, we follow the discussion in Section \ref{sec:concreteFanddelta}, 
+which gives a family of possible $F$ depending on metric entropy, by Pollard's discretization result.
+We choose $F$ based on the epoch $i$:
+\begin{align}
+\label{Fascoveringnumber}
+F \lrp{ V_i, \delta, m_i } :\approx 
+2 \epsilon_{i+1} + 2 \sqrt{\frac{2 \log \cN(\epsilon_{i+1}, V_i) }{m_i}} + 3 \sqrt{\frac{\log (1/\delta)}{m_i}} 
+\leq \epsilon_i + 6 \sqrt{\frac{ \log \lrp{\frac{\cN(\epsilon_{i+1}, V_i)}{\delta}}  }{m_i}}
+\end{align}
+(\textbf{Note}: The ``$\approx$" is because Pollard's discretization result bounding $\hat{\cR}_S (V_i)$ 
+only deals with the covering number 
+using the empirical metric calculated with $S$, not the metric $\rho$. 
+So a further approximation result is required to state a precise bound.
+Due to this, all results in this subsection are only correct up to constants.) \\
+
+Now we can turn the condition that implicitly defines $m_i$ 
+(Line \ref{algmcondition} of the algorithm) 
+into an explicit result on $m_i$.
+\begin{lem}
+For any epoch $i$,
+$$ m_i = \left\lceil \frac{225}{4 \epsilon_i^2} \log \lrp{\frac{4 \cN(\epsilon_{i+1}, V_i)}{\delta}}  \right\rceil $$
+\end{lem}
+\begin{proof}
+This is a simple consequence of substituting \eqref{Fascoveringnumber} 
+into the condition defining $m_i$ 
+(Line \ref{algmcondition} of the algorithm), 
+and then solving for $m_i$.
+\end{proof}
+
+
+\begin{thm}
+If $\cH$ has disagreement coefficient $\theta < \infty$, then if $i_0 := 1 + \log_2 (\theta)$, w.h.p. for all $j > i_0$,
+$$ \sum_{i = i_0+1}^j \abs{L_i} = \cO{ \theta \lrp{\frac{\err{h^*} + \epsilon_j}{\epsilon_j^2}} \log \lrp{\frac{4 \cN(\epsilon_{i+1}, V_i)}{\delta}} } $$
+\end{thm}
+\begin{proof}
+Since $\theta < \infty$, the argument is similar 
+to standard label complexity analyses ([Dasgupta, Hsu, Monteleoni 07] and sequels), 
+but we give a self-contained proof here. 
+
+Define $\cH_{\alpha} = \{ h \in \cH : \err{h} \leq \err{h^*} + \alpha \}$; 
+note that $\cH_{\alpha} \subseteq B(h^*, 2 \err{h^*} + \alpha)$ by the triangle inequality. 
+
+By Corollary \ref{cor:fallbackdiscoeff}, for $i > i_0$, 
+we have $W_i \subseteq V_i \subseteq \cH_{16 \epsilon_{i-1}} \subseteq B(h^*, 2 \err{h^*} + 16 \epsilon_{i-1})$, 
+so by definition of $\theta$,
+\begin{align}
+\label{prdiscoeffcover}
+\prp{x \in DIS(W_i)}{} \leq \prp{x \in DIS(B(h^*, 2 \err{h^*} + 16 \epsilon_{i-1})) }{} \leq \theta (2 \err{h^*} + 16 \epsilon_{i-1})
+\end{align}
+On examining the algorithm, we have for $i > i_0$ that 
+$ \abs{L_i} = \sum_{j=1}^{m_i} \ifn(X^i_j \in DIS(W_i))$. 
+This is a sum of independent Bernoulli variables, 
+each with success probability bounded by \eqref{prdiscoeffcover}; 
+so applying a Chernoff bound, union bounds, and \eqref{prdiscoeffcover}, 
+w.h.p. for all $i > i_0$,
+\begin{align*}
+\abs{L_i} &= \sum_{j=1}^{m_i} \ifn(X^i_j \in DIS(W_i)) \leq \sqrt{m_i \log(1/\delta)} + m_i \prp{x \in DIS(W_i)}{} \\
+&\leq \sqrt{m_i \log(2/\delta)} + m_i \theta (2 \err{h^*} + 16 \epsilon_{i-1}) 
+\leq \theta (2 \err{h^*} + 16 \epsilon_{i-1}) \frac{225}{2 \epsilon_i^2} \log \lrp{\frac{4 \cN(\epsilon_{i+1}, V_i)}{\delta}}
+\end{align*}
+The result follows by properties 
+\end{proof}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\newpage
+\subsection{Generalizing the Disagreement Coefficient}
+
+\akshay{Several directions come to mind in this context: 
+\begin{itemize}
+\item
+Revisit the ``Smooth Relative Regret Approximations" of [Ailon, Begleiter, Ezra 12], 
+as they directly generalize the disagreement coefficient in a way that appears similar 
+to our strategy of taking a cover and sampling from its disagreement region. 
+Specifically, is one epoch of our algorithm equivalent to taking their relative regret approximation?
+\item
+df
+\end{itemize}}
+
+\akshay{General idea: the complexity of active learning up to a certain error should depend on 
+a ``local" notion of covering number 
+(local in the sense that it is restricted to low-error hypotheses, as in local Rademacher complexity). 
+The theory of local covering numbers seems underdeveloped in the literature, 
+and so I need to work out some examples of such numbers. }
+
+% Voting classifiers can be related to this Gibbs-style search thorough hypothesis space using game-theoretic (similar to our submission) and packing arguments.
+% Searching through hypothesis space can be related to exploiting cluster structure in data under regularity conditions on \eta(x) that relate the change in label distribution to an underlying metric on the data space. 
+
+
+%----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+%----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+%----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+\newpage
+\section{QBC with Covers}
+We next analyze the only general-purpose aggressive active learning algorithm in the theoretical literature, 
+the query-by-committee algorithm. 
+
+
+\subsection{Generalizing the Splitting Index?}
+
+
+
+
+\end{document}
+
