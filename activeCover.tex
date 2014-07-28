@@ -467,7 +467,7 @@ $$\prp{g(x) \neq h(x) \mid x \notin DIS(W_i)}{} \leq \frac{\epsilon_i}{\prp{x \n
 %$$\prp{g(x) \neq h(x) \mid x \notin DIS(W_i)}{} \leq \frac{2 \epsilon_i}{\prp{x \notin DIS(W_i)}{}} $$
 \end{lem}
 \begin{proof}
-Suppose $\displaystyle g_C \in \argmin_{c \in W_i} \rho(g, c)$. 
+Suppose $ g_C \in \argmin_{c \in W_i} \rho(g, c)$. 
 Since $W_i$ is an $\epsilon_i$-cover, 
 \begin{align*}
 \epsilon_i &\geq \prp{g_C (x) \neq g (x)}{} \geq \prp{g_C (x) \neq g (x) \mid x \notin DIS(W_i)}{} \prp{x \notin DIS(W_i)}{} \\
@@ -583,7 +583,7 @@ It suffices to prove that w.h.p.
 \end{align}
 because of the definition of $m := m_i$ in the algorithm (Line \ref{algmcondition}).
 
-First define $\displaystyle w^* \in \argmin_{g \in W_i} \rho (g, h^*)$. 
+First define $ w^* \in \argmin_{g \in W_i} \rho (g, h^*)$. 
 Since $h^* \in V_i$ by Lemma \ref{lem:optisinvs}, $\rho(w^*, h^*) \leq \epsilon_i$, so
 we have by \eqref{fullsetsampskeleton} that w.p. $\geq 1- \delta$, 
 for all $h \in W_{i+1} \subseteq V_{i+1} \subseteq V_i$ simultaneously, 
@@ -639,7 +639,7 @@ and (b) is by the definition of $w^*$.
 The excess error in Theorem \ref{thm:fallback}, 
 $\frac{8 \epsilon_i}{\prp{x \notin DIS(W_i)}{}}$, is $\cO{\epsilon_i}$ in many cases.
 For an example, recall the definition of the disagreement coefficient 
-$\displaystyle \theta = \sup_{\epsilon} \frac{\prp{DIS(B(h^*, \epsilon))}{}}{\epsilon}$, 
+$ \theta = \sup_{\epsilon} \frac{\prp{DIS(B(h^*, \epsilon))}{}}{\epsilon}$, 
 widely used to derive guarantees for disagreement-based active learning algorithms. 
 Then we have the following when $\theta$ is finite (proof omitted here).
 \footnote{A sketch: Suppose $\cH$ has finite disagreement coefficient $\theta$, 
@@ -701,8 +701,12 @@ and then solving for $m_i$.
 
 
 \begin{thm}
-If $\cH$ has disagreement coefficient $\theta < \infty$, then if $i_0 := 1 + \log_2 (\theta)$, w.h.p. for all $j > i_0$,
-$$ \sum_{i = i_0+1}^j \abs{L_i} = \cO{ \theta \lrp{\frac{\err{h^*} + \epsilon_j}{\epsilon_j^2}} \log \lrp{\frac{4 \cN(\epsilon_{i+1}, V_i)}{\delta}} } $$
+If $\cH$ has disagreement coefficient $\theta < \infty$, then define $i_0 := 1 + \log_2 (\theta)$. 
+Suppose $\max_i \cN(\epsilon_{i+1}, V_i) \leq 2^d$ for some $d$.
+Then w.h.p. for any target excess error $\gamma$ that the algorithm is given, 
+the algorithm queries 
+$$ \cO{ \theta \lrp{\frac{\err{h^*} + \gamma}{\gamma^2}} \log \lrp{\frac{1}{\gamma}} \lrp{d + \log \lrp{\frac{1}{\delta}} } } $$
+labels from epoch $i_0+1$ onwards.
 \end{thm}
 \begin{proof}
 Since $\theta < \infty$, the argument is similar 
@@ -728,13 +732,19 @@ w.h.p. for all $i > i_0$,
 \begin{align*}
 \abs{L_i} &= \sum_{j=1}^{m_i} \ifn(X^i_j \in DIS(W_i)) \leq \sqrt{m_i \log(1/\delta)} + m_i \prp{x \in DIS(W_i)}{} \\
 &\leq \sqrt{m_i \log(2/\delta)} + m_i \theta (2 \err{h^*} + 16 \epsilon_{i-1}) 
-\leq \theta (2 \err{h^*} + 16 \epsilon_{i-1}) \frac{225}{2 \epsilon_i^2} \log \lrp{\frac{4 \cN(\epsilon_{i+1}, V_i)}{\delta}}
+\leq \theta (2 \err{h^*} + 16 \epsilon_{i-1}) \frac{225}{2 \epsilon_i^2} \log \lrp{\frac{4 \cN(\epsilon_{i+1}, V_i)}{\delta}} \\
+&= \cO{ \theta \lrp{\frac{\err{h^*} + \gamma}{\gamma^2}} \lrp{d + \log \lrp{\frac{1}{\delta}} } }
 \end{align*}
-The result follows by properties 
+The result follows by noting that there are $\lesssim \log(1/\gamma)$ epochs.
 \end{proof}
-
-
-
+We have intentionally deferred taking a supremum over epochs until this final point of the analysis; 
+it is intuitive that the complexity of the algorithm depends on a measure of complexity (covering number) 
+that is \emph{local} to $V_i$. 
+If at any point there are many approximately error-minimizing hypotheses well-separated in $\rho$, 
+they might be difficult to detect with any active learning algorithm that searches the hypothesis space.
+\akshay{This suggests the possibility of a lower bound in terms of local complexities, 
+which I will think about.}
+\akshay{TBD: Include comparison with known distribution-dependent lower bounds for active learning.}
 
 
 
@@ -750,22 +760,17 @@ The result follows by properties
 \newpage
 \subsection{Generalizing the Disagreement Coefficient}
 
-\akshay{Several directions come to mind in this context: 
+\akshay{Some further directions come to mind in this context: 
 \begin{itemize}
+\item
+When $\theta$ is finite, the region of unanimity of the hypotheses is large and only takes one hypothesis to cover. 
+What upper bound can be derived on $\cN(\epsilon_{i+1}, \cH_{\epsilon_i})$?
 \item
 Revisit the ``Smooth Relative Regret Approximations" of [Ailon, Begleiter, Ezra 12], 
 as they directly generalize the disagreement coefficient in a way that appears similar 
 to our strategy of taking a cover and sampling from its disagreement region. 
 Specifically, is one epoch of our algorithm equivalent to taking their relative regret approximation?
-\item
-df
 \end{itemize}}
-
-\akshay{General idea: the complexity of active learning up to a certain error should depend on 
-a ``local" notion of covering number 
-(local in the sense that it is restricted to low-error hypotheses, as in local Rademacher complexity). 
-The theory of local covering numbers seems underdeveloped in the literature, 
-and so I need to work out some examples of such numbers. }
 
 % Voting classifiers can be related to this Gibbs-style search thorough hypothesis space using game-theoretic (similar to our submission) and packing arguments.
 % Searching through hypothesis space can be related to exploiting cluster structure in data under regularity conditions on \eta(x) that relate the change in label distribution to an underlying metric on the data space. 
