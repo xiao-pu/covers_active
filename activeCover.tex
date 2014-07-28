@@ -195,7 +195,8 @@ the empirical error of $h_i$ is $\emperr{h_i} = \frac{1}{\abs{S}} \sum_{i=1}^{\a
 We denote an optimal hypothesis (there may be multiple) by 
 $h^* \in \argmin_{h \in \cH} \err{h}$. 
 Though much work has been done on the \emph{realizable} case when $\err{h^*} = 0$, 
-we focus on the more general \emph{agnostic} case $\err{h^*} \geq 0$.
+we focus on the more general \emph{agnostic} case $\err{h^*} \geq 0$. 
+To this end, define $\cH_{\alpha} = \{ h \in \cH : \err{h} \leq \err{h^*} + \alpha \}$ for any $\alpha \geq 0$.
 
 Finally, define the \emph{disagreement region} of any $W \subseteq \cH$ by 
 $DIS(W) := \left\{ x \in \cX : \exists h, h' \in W \;s.t.\; h(x) \neq h'(x) \right\}$. \\
@@ -216,8 +217,6 @@ Denote a minimum-sized $\epsilon$-cover of $W$ by $\cov{\epsilon, W}$, so that $
 \footnote{We gloss over the details of constructing (near-)minimal $\epsilon$-covers for clarity; 
 the discussion of Section \ref{sec:unlabeleddata} on unlabeled data addresses some of the related issues.}
 
-Conversely, for any $W \subseteq \cH$ and distance $\epsilon > 0$, 
-define $R (W, \epsilon) := \bigcup_{h \in W} B(h, \epsilon)$ to be the region of $\cH$ covered by $W$ at scale $\epsilon$. 
 
 %{\bf Labelings and entropy:} 
 %A \emph{labeling} for any subset $S \subseteq X$ is a vector $\vr \in \{-1,+1\}^{\abs{S}}$ 
@@ -713,8 +712,7 @@ Since $\theta < \infty$, the argument is similar
 to standard label complexity analyses ([Dasgupta, Hsu, Monteleoni 07] and sequels), 
 but we give a self-contained proof here. 
 
-Define $\cH_{\alpha} = \{ h \in \cH : \err{h} \leq \err{h^*} + \alpha \}$; 
-note that $\cH_{\alpha} \subseteq B(h^*, 2 \err{h^*} + \alpha)$ by the triangle inequality. 
+Note that $\cH_{\alpha} \subseteq B(h^*, 2 \err{h^*} + \alpha)$ by the triangle inequality. 
 
 By Corollary \ref{cor:fallbackdiscoeff}, for $i > i_0$, 
 we have $W_i \subseteq V_i \subseteq \cH_{16 \epsilon_{i-1}} \subseteq B(h^*, 2 \err{h^*} + 16 \epsilon_{i-1})$, 
@@ -760,7 +758,7 @@ which I will think about.}
 \newpage
 \subsection{Generalizing the Disagreement Coefficient}
 
-\akshay{Some further directions come to mind in this context: 
+\akshay{ 
 \begin{itemize}
 \item
 When $\theta$ is finite, the region of unanimity of the hypotheses is large and only takes one hypothesis to cover. 
